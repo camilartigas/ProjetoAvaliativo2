@@ -19,6 +19,11 @@ public class FarmaciaService {
     }
 
     public List<Farmacia> listarTodasFarmacias() {
+
         return farmaciaRepository.findAll();
+    }
+
+    public Farmacia obterFarmaciaPorCnpj(Long cnpj) {
+        return farmaciaRepository.findByCnpj(cnpj);
     }
 }
