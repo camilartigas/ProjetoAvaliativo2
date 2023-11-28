@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FarmaciaRepository extends JpaRepository<Farmacia, Long> {
+    Farmacia findByCnpj(Long cnpj);
 
 }
