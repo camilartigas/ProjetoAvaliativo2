@@ -1,5 +1,9 @@
-package com.medicationManagement.MedicationManagement.model.dto;
+package com.medicationManagement.MedicationManagement.dto;
 
+import lombok.Data;
+
+
+@Data
 public class EnderecoRequest {
     private Long cep;
     private String logradouro;

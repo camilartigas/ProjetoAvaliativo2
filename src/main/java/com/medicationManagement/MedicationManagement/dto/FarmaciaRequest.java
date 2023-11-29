@@ -1,4 +1,4 @@
-package com.medicationManagement.MedicationManagement.model.dto;
+package com.medicationManagement.MedicationManagement.dto;
 
 import lombok.Data;
 
