@@ -1,6 +1,8 @@
 package com.medicationManagement.MedicationManagement.service;
 
+import com.medicationManagement.MedicationManagement.dto.EnderecoRequest;
 import com.medicationManagement.MedicationManagement.dto.FarmaciaRequest;
+import com.medicationManagement.MedicationManagement.exception.EnderecoInvalidoException;
 import com.medicationManagement.MedicationManagement.exception.FarmaciaExistenteException;
 import com.medicationManagement.MedicationManagement.model.Endereco;
 import com.medicationManagement.MedicationManagement.model.Farmacia;
@@ -10,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 @Service
 public class FarmaciaService {
 
@@ -18,12 +19,10 @@ public class FarmaciaService {
 
     @Autowired
     public FarmaciaService(FarmaciaRepository farmaciaRepository) {
-
         this.farmaciaRepository = farmaciaRepository;
     }
 
     public List<Farmacia> listarTodasFarmacias() {
-
         return farmaciaRepository.findAll();
     }
 
@@ -34,38 +33,41 @@ public class FarmaciaService {
     public Farmacia cadastrarFarmacia(FarmaciaRequest farmaciaRequest) {
         Long cnpj = farmaciaRequest.getCnpj();
 
-        //Verifica se CNPJ já está cadastrado
+        // Verifica se CNPJ já está cadastrado
         if (farmaciaRepository.existsByCnpj(cnpj)) {
             throw new FarmaciaExistenteException("Já existe uma farmácia cadastrada com este CNPJ.");
         }
 
-        Farmacia novaFarmacia = criarFarmaciaAPartirDoRequest(farmaciaRequest);
+        // Converte o EnderecoRequest para Endereco
+        Endereco endereco = converterEnderecoRequestParaEndereco(farmaciaRequest.getEndereco());
+
+        // Verifica se o Endereco é nulo ou algum campo obrigatório está vazio
+        if (endereco == null || endereco.getCep() == null || endereco.getLogradouro() == null
+                || endereco.getNumero() == null || endereco.getBairro() == null
+                || endereco.getCidade() == null || endereco.getEstado() == null
+                || endereco.getLatitude() == null || endereco.getLongitude() == null) {
+            throw new EnderecoInvalidoException("O endereço é inválido ou está incompleto.");
+        }
+
+        Farmacia novaFarmacia = criarFarmaciaAPartirDoRequest(farmaciaRequest, endereco);
         return farmaciaRepository.save(novaFarmacia);
     }
 
-
-    private void validarCamposObrigatorios(FarmaciaRequest farmaciaRequest) {
-        if (farmaciaRequest.getCnpj() == null ||
-                farmaciaRequest.getRazaoSocial() == null ||
-                farmaciaRequest.getNomeFantasia() == null ||
-                farmaciaRequest.getEmail() == null ||
-                farmaciaRequest.getCelular() == null ||
-                farmaciaRequest.getEndereco() == null ||
-                farmaciaRequest.getEndereco().getCep() == null ||
-                farmaciaRequest.getEndereco().getLogradouro() == null ||
-                farmaciaRequest.getEndereco().getNumero() == null ||
-                farmaciaRequest.getEndereco().getBairro() == null ||
-                farmaciaRequest.getEndereco().getCidade() == null ||
-                farmaciaRequest.getEndereco().getEstado() == null ||
-                farmaciaRequest.getEndereco().getComplemento() == null ||
-                farmaciaRequest.getEndereco().getLatitude() == null ||
-                farmaciaRequest.getEndereco().getLongitude() == null) {
-            throw new RuntimeException("Todos os campos obrigatórios devem ser preenchidos.");
-        }
+    private Endereco converterEnderecoRequestParaEndereco(EnderecoRequest enderecoRequest) {
+        Endereco endereco = new Endereco();
+        endereco.setCep(enderecoRequest.getCep());
+        endereco.setLogradouro(enderecoRequest.getLogradouro());
+        endereco.setNumero(enderecoRequest.getNumero());
+        endereco.setBairro(enderecoRequest.getBairro());
+        endereco.setCidade(enderecoRequest.getCidade());
+        endereco.setEstado(enderecoRequest.getEstado());
+        endereco.setComplemento(enderecoRequest.getComplemento());
+        endereco.setLatitude(enderecoRequest.getLatitude());
+        endereco.setLongitude(enderecoRequest.getLongitude());
+        return endereco;
     }
 
-
-    private Farmacia criarFarmaciaAPartirDoRequest(FarmaciaRequest farmaciaRequest) {
+    private Farmacia criarFarmaciaAPartirDoRequest(FarmaciaRequest farmaciaRequest, Endereco endereco) {
         Farmacia novaFarmacia = new Farmacia();
         novaFarmacia.setCnpj(farmaciaRequest.getCnpj());
         novaFarmacia.setRazaoSocial(farmaciaRequest.getRazaoSocial());
@@ -73,20 +75,7 @@ public class FarmaciaService {
         novaFarmacia.setEmail(farmaciaRequest.getEmail());
         novaFarmacia.setTelefone(farmaciaRequest.getTelefone());
         novaFarmacia.setCelular(farmaciaRequest.getCelular());
-
-        Endereco endereco = new Endereco();
-        endereco.setCep(farmaciaRequest.getEndereco().getCep());
-        endereco.setLogradouro(farmaciaRequest.getEndereco().getLogradouro());
-        endereco.setNumero(farmaciaRequest.getEndereco().getNumero());
-        endereco.setBairro(farmaciaRequest.getEndereco().getBairro());
-        endereco.setCidade(farmaciaRequest.getEndereco().getCidade());
-        endereco.setEstado(farmaciaRequest.getEndereco().getEstado());
-        endereco.setComplemento(farmaciaRequest.getEndereco().getComplemento());
-        endereco.setLatitude(farmaciaRequest.getEndereco().getLatitude());
-        endereco.setLongitude(farmaciaRequest.getEndereco().getLongitude());
-
         novaFarmacia.setEndereco(endereco);
-
         return novaFarmacia;
     }
 }
