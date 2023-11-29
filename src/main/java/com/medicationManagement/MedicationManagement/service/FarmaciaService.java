@@ -1,6 +1,7 @@
 package com.medicationManagement.MedicationManagement.service;
 
 import com.medicationManagement.MedicationManagement.dto.FarmaciaRequest;
+import com.medicationManagement.MedicationManagement.exception.FarmaciaExistenteException;
 import com.medicationManagement.MedicationManagement.model.Endereco;
 import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.repository.FarmaciaRepository;
@@ -31,12 +32,11 @@ public class FarmaciaService {
     }
 
     public Farmacia cadastrarFarmacia(FarmaciaRequest farmaciaRequest) {
-        validarCamposObrigatorios(farmaciaRequest);
+        Long cnpj = farmaciaRequest.getCnpj();
 
         //Verifica se CNPJ já está cadastrado
-        Long cnpj = farmaciaRequest.getCnpj();
         if (farmaciaRepository.existsByCnpj(cnpj)) {
-            throw new RuntimeException("Já existe uma farmácia cadastrada com este CNPJ.");
+            throw new FarmaciaExistenteException("Já existe uma farmácia cadastrada com este CNPJ.");
         }
 
         Farmacia novaFarmacia = criarFarmaciaAPartirDoRequest(farmaciaRequest);
