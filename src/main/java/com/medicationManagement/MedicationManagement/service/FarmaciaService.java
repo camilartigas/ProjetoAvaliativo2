@@ -43,8 +43,8 @@ public class FarmaciaService {
         return farmaciaRepository.save(novaFarmacia);
     }
 
-    private void validarCamposObrigatorios(FarmaciaRequest farmaciaRequest) {
 
+    private void validarCamposObrigatorios(FarmaciaRequest farmaciaRequest) {
         if (farmaciaRequest.getCnpj() == null ||
                 farmaciaRequest.getRazaoSocial() == null ||
                 farmaciaRequest.getNomeFantasia() == null ||
@@ -63,6 +63,7 @@ public class FarmaciaService {
             throw new RuntimeException("Todos os campos obrigatórios devem ser preenchidos.");
         }
     }
+
 
     private Farmacia criarFarmaciaAPartirDoRequest(FarmaciaRequest farmaciaRequest) {
         Farmacia novaFarmacia = new Farmacia();
