@@ -31,11 +31,40 @@ public class FarmaciaService {
     }
 
     public Farmacia cadastrarFarmacia(FarmaciaRequest farmaciaRequest) {
+        validarCamposObrigatorios(farmaciaRequest);
+
+        //Verifica se CNPJ já está cadastrado
         Long cnpj = farmaciaRequest.getCnpj();
         if (farmaciaRepository.existsByCnpj(cnpj)) {
             throw new RuntimeException("Já existe uma farmácia cadastrada com este CNPJ.");
         }
 
+        Farmacia novaFarmacia = criarFarmaciaAPartirDoRequest(farmaciaRequest);
+        return farmaciaRepository.save(novaFarmacia);
+    }
+
+    private void validarCamposObrigatorios(FarmaciaRequest farmaciaRequest) {
+
+        if (farmaciaRequest.getCnpj() == null ||
+                farmaciaRequest.getRazaoSocial() == null ||
+                farmaciaRequest.getNomeFantasia() == null ||
+                farmaciaRequest.getEmail() == null ||
+                farmaciaRequest.getCelular() == null ||
+                farmaciaRequest.getEndereco() == null ||
+                farmaciaRequest.getEndereco().getCep() == null ||
+                farmaciaRequest.getEndereco().getLogradouro() == null ||
+                farmaciaRequest.getEndereco().getNumero() == null ||
+                farmaciaRequest.getEndereco().getBairro() == null ||
+                farmaciaRequest.getEndereco().getCidade() == null ||
+                farmaciaRequest.getEndereco().getEstado() == null ||
+                farmaciaRequest.getEndereco().getComplemento() == null ||
+                farmaciaRequest.getEndereco().getLatitude() == null ||
+                farmaciaRequest.getEndereco().getLongitude() == null) {
+            throw new RuntimeException("Todos os campos obrigatórios devem ser preenchidos.");
+        }
+    }
+
+    private Farmacia criarFarmaciaAPartirDoRequest(FarmaciaRequest farmaciaRequest) {
         Farmacia novaFarmacia = new Farmacia();
         novaFarmacia.setCnpj(farmaciaRequest.getCnpj());
         novaFarmacia.setRazaoSocial(farmaciaRequest.getRazaoSocial());
@@ -57,6 +86,6 @@ public class FarmaciaService {
 
         novaFarmacia.setEndereco(endereco);
 
-        return farmaciaRepository.save(novaFarmacia);
+        return novaFarmacia;
     }
 }

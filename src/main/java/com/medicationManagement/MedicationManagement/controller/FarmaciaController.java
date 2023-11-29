@@ -1,14 +1,15 @@
 package com.medicationManagement.MedicationManagement.controller;
 
+import com.medicationManagement.MedicationManagement.dto.FarmaciaRequest;
 import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.service.FarmaciaService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 
@@ -38,5 +39,11 @@ public class FarmaciaController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @PostMapping
+    public ResponseEntity<Farmacia> cadastrarFarmacia(@Valid @RequestBody FarmaciaRequest farmaciaRequest) throws URISyntaxException {
+        Farmacia novaFarmacia = farmaciaService.cadastrarFarmacia(farmaciaRequest);
+        return ResponseEntity.created(new URI("/farmacias/" + novaFarmacia.getCnpj())).body(novaFarmacia);
     }
 }
