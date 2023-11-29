@@ -51,15 +51,4 @@ public class FarmaciaController {
         Farmacia novaFarmacia = farmaciaService.cadastrarFarmacia(farmaciaRequest);
         return ResponseEntity.created(new URI("/farmacias/" + novaFarmacia.getCnpj())).body(novaFarmacia);
     }
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(error -> {
-            String fieldName = ((FieldError) error).getField();
-            String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.badRequest().body(errors);
-    }
 }
