@@ -38,15 +38,17 @@ public class FarmaciaService {
             throw new FarmaciaExistenteException("Já existe uma farmácia cadastrada com este CNPJ.");
         }
 
-        // Converte o EnderecoRequest para Endereco
-        Endereco endereco = converterEnderecoRequestParaEndereco(farmaciaRequest.getEndereco());
+        EnderecoRequest enderecoRequest = farmaciaRequest.getEndereco();
 
-        // Verifica se o Endereco é nulo ou algum campo obrigatório está vazio
+        // Converte o EnderecoRequest para Endereco
+        Endereco endereco = converterEnderecoRequestParaEndereco(enderecoRequest);
+
+        // Verifica se o Endereco é nulo ou se algum campo obrigatório está vazio
         if (endereco == null || endereco.getCep() == null || endereco.getLogradouro() == null
                 || endereco.getNumero() == null || endereco.getBairro() == null
                 || endereco.getCidade() == null || endereco.getEstado() == null
                 || endereco.getLatitude() == null || endereco.getLongitude() == null) {
-            throw new EnderecoInvalidoException("O endereço é inválido ou está incompleto.");
+            throw new EnderecoInvalidoException("O endereço é inválido ou está incompleto, apenas complemento poderá ficar sem preenchimento");
         }
 
         Farmacia novaFarmacia = criarFarmaciaAPartirDoRequest(farmaciaRequest, endereco);
