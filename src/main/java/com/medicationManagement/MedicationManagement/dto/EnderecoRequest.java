@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 public class EnderecoRequest {
 
+
     private Long cep;
     private String logradouro;
     private Integer numero;
