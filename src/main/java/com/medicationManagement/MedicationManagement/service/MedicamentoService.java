@@ -1,5 +1,6 @@
 package com.medicationManagement.MedicationManagement.service;
 
+import com.medicationManagement.MedicationManagement.dto.MedicamentoRequest;
 import com.medicationManagement.MedicationManagement.exception.RegistroDuplicadoException;
 import com.medicationManagement.MedicationManagement.model.Medicamento;
 import com.medicationManagement.MedicationManagement.repository.MedicamentoRepository;
@@ -27,23 +28,38 @@ public class MedicamentoService {
         return medicamentoRepository.findAll();
     }
 
-    public Medicamento incluirMedicamento(Medicamento medicamento) {
-        // Verificar se o número de registro já está cadastrado
-        if (medicamentoRepository.existsByNumeroRegistro(medicamento.getNumeroRegistro())) {
-            throw new RegistroDuplicadoException("Erro ao cadastrar medicamento: Número de registro já existente.");
+    public Medicamento incluirMedicamento(MedicamentoRequest medicamentoRequest) {
+        Integer numeroRegistro = medicamentoRequest.getNumeroRegistro();
+
+        // Verifica se o número de registro já está cadastrado
+        if (medicamentoRepository.existsByNumeroRegistro(numeroRegistro)) {
+            throw new RegistroDuplicadoException("Já existe um medicamento cadastrado com este número de registro.");
         }
 
-        // Validar campos obrigatórios usando Bean Validation
+        // Validação dos campos obrigatórios usando Bean Validation
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<Medicamento>> violations = validator.validate(medicamento);
+        Set<ConstraintViolation<MedicamentoRequest>> violations = validator.validate(medicamentoRequest);
         if (!violations.isEmpty()) {
             StringBuilder errorMsg = new StringBuilder("Erro ao cadastrar medicamento: ");
-            for (ConstraintViolation<Medicamento> violation : violations) {
+            for (ConstraintViolation<MedicamentoRequest> violation : violations) {
                 errorMsg.append(violation.getMessage()).append("; ");
             }
             throw new ConstraintViolationException(errorMsg.toString(), violations);
         }
 
-        return medicamentoRepository.save(medicamento);
+        Medicamento novoMedicamento = criarMedicamentoAPartirDoRequest(medicamentoRequest);
+        return medicamentoRepository.save(novoMedicamento);
+    }
+
+    private Medicamento criarMedicamentoAPartirDoRequest(MedicamentoRequest medicamentoRequest) {
+        Medicamento novoMedicamento = new Medicamento();
+        novoMedicamento.setNumeroRegistro(medicamentoRequest.getNumeroRegistro());
+        novoMedicamento.setNome(medicamentoRequest.getNome());
+        novoMedicamento.setLaboratorio(medicamentoRequest.getLaboratorio());
+        novoMedicamento.setDosagem(medicamentoRequest.getDosagem());
+        novoMedicamento.setDescricao(medicamentoRequest.getDescricao());
+        novoMedicamento.setPreco(medicamentoRequest.getPreco());
+        novoMedicamento.setTipoMedicamento(medicamentoRequest.getTipo());
+        return novoMedicamento;
     }
 }

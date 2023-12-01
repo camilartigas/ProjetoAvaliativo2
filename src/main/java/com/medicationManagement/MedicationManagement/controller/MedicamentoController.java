@@ -1,5 +1,6 @@
 package com.medicationManagement.MedicationManagement.controller;
 
+import com.medicationManagement.MedicationManagement.dto.MedicamentoRequest;
 import com.medicationManagement.MedicationManagement.exception.RegistroDuplicadoException;
 import com.medicationManagement.MedicationManagement.model.Medicamento;
 import com.medicationManagement.MedicationManagement.service.MedicamentoService;
@@ -29,9 +30,9 @@ public class MedicamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> incluirMedicamento(@Valid @RequestBody Medicamento medicamento) {
+    public ResponseEntity<?> incluirMedicamento(@Valid @RequestBody MedicamentoRequest medicamentoRequest) {
         try {
-            Medicamento novoMedicamento = medicamentoService.incluirMedicamento(medicamento);
+            Medicamento novoMedicamento = medicamentoService.incluirMedicamento(medicamentoRequest);
             return ResponseEntity.status(HttpStatus.CREATED).body(novoMedicamento);
         } catch (RegistroDuplicadoException | ConstraintViolationException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
