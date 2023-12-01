@@ -3,6 +3,8 @@ package com.medicationManagement.MedicationManagement.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -10,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "ESTOQUES")
 @IdClass(IdEstoque.class)
-public class Estoque {
+public class Estoque implements Serializable {
 
     @Id
     private Long cnpj;
