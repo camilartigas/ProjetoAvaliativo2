@@ -1,14 +1,13 @@
 package com.medicationManagement.MedicationManagement.controller;
 
 import com.medicationManagement.MedicationManagement.dto.EstoqueDetalheDTO;
+import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
+import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
 import com.medicationManagement.MedicationManagement.model.Estoque;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,5 +29,11 @@ public class EstoqueController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(estoque);
+    }
+
+    @PostMapping
+    public ResponseEntity<EstoqueResponse> adicionarMedicamentoAoEstoque(@RequestBody EstoqueRequest estoqueRequest) {
+        EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
+        return ResponseEntity.ok(response);
     }
 }
