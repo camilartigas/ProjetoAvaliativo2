@@ -3,9 +3,12 @@ package com.medicationManagement.MedicationManagement.controller;
 import com.medicationManagement.MedicationManagement.dto.EstoqueDetalheDTO;
 import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
 import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
-import com.medicationManagement.MedicationManagement.model.Estoque;
+import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
+import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
+import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,8 +35,14 @@ public class EstoqueController {
     }
 
     @PostMapping
-    public ResponseEntity<EstoqueResponse> adicionarMedicamentoAoEstoque(@RequestBody EstoqueRequest estoqueRequest) {
-        EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<?> adicionarMedicamentoAoEstoque(@RequestBody EstoqueRequest estoqueRequest) {
+        try {
+            EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
+            return ResponseEntity.ok(response);
+        } catch (FarmaciaNotFoundException | MedicamentoNotFoundException | QuantidadeInvalidaException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+        }
     }
 }

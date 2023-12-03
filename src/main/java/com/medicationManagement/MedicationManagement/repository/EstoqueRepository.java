@@ -13,4 +13,5 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
     List<Estoque> findByCnpj(Long cnpj);
 
     Optional<Estoque> findByCnpjAndNroRegistro(Long cnpj, Integer nroRegistro);
+
 }
