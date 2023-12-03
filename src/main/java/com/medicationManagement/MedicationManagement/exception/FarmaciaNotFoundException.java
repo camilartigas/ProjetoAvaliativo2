@@ -5,4 +5,3 @@ public class FarmaciaNotFoundException extends RuntimeException {
         super(message);
     }
 }
-

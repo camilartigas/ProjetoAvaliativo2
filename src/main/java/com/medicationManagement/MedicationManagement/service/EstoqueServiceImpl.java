@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -68,42 +67,70 @@ public class EstoqueServiceImpl implements EstoqueService {
                 estoque.getQuantidade(), estoque.getDataAtualizacao());
     }
 
-    @Override
     public EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest) {
         Long cnpj = estoqueRequest.getCnpj();
         Integer numeroRegistro = estoqueRequest.getNroRegistro();
         Integer quantidade = estoqueRequest.getQuantidade();
 
-        Optional<Estoque> estoqueOptional = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro);
+        // Verifica se algum dos campos está vazio
+        if (cnpj == null || numeroRegistro == null || quantidade == null) {
+            String mensagem = "Todos os campos (CNPJ, número de registro e quantidade) devem ser preenchidos.\n";
 
-        if (estoqueOptional.isEmpty()) {
-            throw new EstoqueNotFoundException("Registro de estoque não encontrado para a venda do medicamento");
+            if (cnpj == null) {
+                mensagem += " CNPJ não preenchido. Por favor, coloque o CNPJ!\n";
+            }
+            if (numeroRegistro == null) {
+                mensagem += " Número de registro não preenchido. Por favor, coloque o número de registro\n";
+            }
+            if (quantidade == null) {
+                mensagem += "- Quantidade não preenchida. Por favor, coloque a quantidade!\n";
+            }
+            throw new RuntimeException(mensagem);
         }
 
-        Estoque estoque = estoqueOptional.get();
-
-        if (!Objects.equals(estoque.getCnpj(), cnpj)) {
-            throw new CnpjNotFoundException("CNPJ não encontrado no registro de estoque");
+        if (quantidade <= 0) {
+            throw new RuntimeException("A quantidade deve ser um número positivo maior que zero.");
         }
-        LocalDateTime dataAtualizacao = LocalDateTime.now();
-        int novaQuantidade = estoque.getQuantidade() - quantidade;
 
-        if (novaQuantidade < 0) {
+        // Verifica se o CNPJ existe no banco de dados
+        List<Estoque> estoquePorCnpj = estoqueRepository.findByCnpj(cnpj);
+
+        if (estoquePorCnpj.isEmpty()) {
+            throw new CnpjNotFoundException("CNPJ não encontrado");
+        }
+
+        // Busca o estoque específico por CNPJ e número de registro
+        Optional<Estoque> estoquePorCnpjENumeroRegistro = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro);
+
+        if (estoquePorCnpjENumeroRegistro.isEmpty()) {
+            throw new EstoqueNotFoundException("Medicamento não encontrado no estoque");
+        }
+
+        Estoque estoque = estoquePorCnpjENumeroRegistro.get();
+
+        // Verifica se a quantidade em estoque é suficiente para a venda
+        if (estoque.getQuantidade() < quantidade) {
             throw new RuntimeException("Quantidade insuficiente em estoque para venda");
         }
 
+        // Atualiza a quantidade em estoque após a venda
+        int novaQuantidade = estoque.getQuantidade() - quantidade;
         estoque.setQuantidade(novaQuantidade);
-        estoque.setDataAtualizacao(dataAtualizacao);
+        estoque.setDataAtualizacao(LocalDateTime.now());
 
+        // Se a quantidade em estoque se esgotar, remove o registro de estoque
         if (novaQuantidade == 0) {
             estoqueRepository.delete(estoque);
         } else {
             estoqueRepository.save(estoque);
         }
 
-        return new EstoqueResponse(estoque.getCnpj(), estoque.getNroRegistro(),
-                estoque.getQuantidade(), estoque.getDataAtualizacao());
+        // Retorna uma resposta com os detalhes da venda
+        return new EstoqueResponse(
+                estoque.getCnpj(),
+                estoque.getNroRegistro(),
+                estoque.getQuantidade(),
+                estoque.getDataAtualizacao()
+        );
     }
-
-
 }
