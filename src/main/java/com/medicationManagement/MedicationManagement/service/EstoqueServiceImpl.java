@@ -3,33 +3,24 @@ package com.medicationManagement.MedicationManagement.service;
 import com.medicationManagement.MedicationManagement.dto.EstoqueDetalheDTO;
 import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
 import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
-import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
 import com.medicationManagement.MedicationManagement.model.Estoque;
-import com.medicationManagement.MedicationManagement.model.Farmacia;
-import com.medicationManagement.MedicationManagement.model.Medicamento;
 import com.medicationManagement.MedicationManagement.repository.EstoqueRepository;
-import com.medicationManagement.MedicationManagement.repository.FarmaciaRepository;
-import com.medicationManagement.MedicationManagement.repository.MedicamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EstoqueServiceImpl implements EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
-    private final FarmaciaRepository farmaciaRepository;
-    private final MedicamentoRepository medicamentoRepository;
 
     @Autowired
-    public EstoqueServiceImpl(EstoqueRepository estoqueRepository, FarmaciaRepository farmaciaRepository, MedicamentoRepository medicamentoRepository) {
+    public EstoqueServiceImpl(EstoqueRepository estoqueRepository) {
         this.estoqueRepository = estoqueRepository;
-        this.farmaciaRepository = farmaciaRepository;
-        this.medicamentoRepository = medicamentoRepository;
     }
 
     @Override
@@ -52,33 +43,71 @@ public class EstoqueServiceImpl implements EstoqueService {
 
     @Override
     public EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest) {
+        // Implementação para adicionar medicamento ao estoque
+        // Aqui você deve utilizar a lógica de adição de medicamento ao estoque
+        // Verificar se o medicamento já existe no estoque, atualizar a quantidade ou criar um novo registro
+
+        // Exemplo lógico:
         Long cnpj = estoqueRequest.getCnpj();
         Integer numeroRegistro = estoqueRequest.getNroRegistro();
         Integer quantidade = estoqueRequest.getQuantidade();
 
-        Farmacia farmacia = farmaciaRepository.findByCnpj(cnpj);
-        Medicamento medicamento = medicamentoRepository.findByNumeroRegistro(numeroRegistro)
-                .orElseThrow(() -> new MedicamentoNotFoundException("Medicamento com número de Registro fornecido não encontrado"));
-
+        Optional<Estoque> estoqueOptional = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro);
+        Estoque estoque;
         LocalDateTime dataAtualizacao = LocalDateTime.now();
 
-        if (farmacia == null) {
-            throw new FarmaciaNotFoundException("Farmácia com CNPJ fornecido não encontrada");
+        if (estoqueOptional.isPresent()) {
+            estoque = estoqueOptional.get();
+            estoque.setQuantidade(estoque.getQuantidade() + quantidade);
+            estoque.setDataAtualizacao(dataAtualizacao);
+        } else {
+            estoque = new Estoque(cnpj, numeroRegistro, quantidade, dataAtualizacao);
         }
-
-        if (quantidade <= 0) {
-            throw new QuantidadeInvalidaException("A quantidade deve ser um número positivo maior que zero");
-        }
-
-        Estoque estoque = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro)
-                .orElse(new Estoque(cnpj, numeroRegistro, 0, dataAtualizacao));
-
-        estoque.setQuantidade(estoque.getQuantidade() + quantidade);
-        estoque.setDataAtualizacao(dataAtualizacao);
 
         estoqueRepository.save(estoque);
 
         return new EstoqueResponse(estoque.getCnpj(), estoque.getNroRegistro(),
                 estoque.getQuantidade(), estoque.getDataAtualizacao());
+    }
+
+    @Override
+    public EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest) {
+        // Implementação para vender medicamento do estoque
+        // Aqui você deve utilizar a lógica para vender o medicamento do estoque
+        // Verificar se há medicamento suficiente, atualizar a quantidade e atualizar a data de atualização
+
+        // Exemplo lógico:
+        Long cnpj = estoqueRequest.getCnpj();
+        Integer numeroRegistro = estoqueRequest.getNroRegistro();
+        Integer quantidade = estoqueRequest.getQuantidade();
+
+        Optional<Estoque> estoqueOptional = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro);
+        Estoque estoque;
+        LocalDateTime dataAtualizacao = LocalDateTime.now();
+
+        if (estoqueOptional.isPresent()) {
+            estoque = estoqueOptional.get();
+            int novaQuantidade = estoque.getQuantidade() - quantidade;
+
+            if (novaQuantidade < 0) {
+                // Caso a quantidade vendida seja maior que a quantidade em estoque
+                throw new RuntimeException("Quantidade insuficiente em estoque para venda");
+            }
+
+            estoque.setQuantidade(novaQuantidade);
+            estoque.setDataAtualizacao(dataAtualizacao);
+
+            if (novaQuantidade == 0) {
+                // Se após a venda a quantidade for zero, exclui o registro de estoque
+                estoqueRepository.delete(estoque);
+            } else {
+                estoqueRepository.save(estoque);
+            }
+
+            return new EstoqueResponse(estoque.getCnpj(), estoque.getNroRegistro(),
+                    estoque.getQuantidade(), estoque.getDataAtualizacao());
+        } else {
+            throw new RuntimeException("Registro de estoque não encontrado para a venda do medicamento");
+        }
     }
 }

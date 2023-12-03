@@ -9,4 +9,6 @@ import java.util.List;
 public interface EstoqueService {
     List<EstoqueDetalheDTO> consultarEstoquePorCnpj(Long cnpj);
     EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest);
+    EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest);
+
 }
