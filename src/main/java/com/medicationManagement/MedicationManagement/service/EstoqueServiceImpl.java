@@ -44,7 +44,6 @@ public class EstoqueServiceImpl implements EstoqueService {
 
     @Override
     public EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest) {
-
         Long cnpj = estoqueRequest.getCnpj();
         Integer numeroRegistro = estoqueRequest.getNroRegistro();
         Integer quantidade = estoqueRequest.getQuantidade();
@@ -58,14 +57,19 @@ public class EstoqueServiceImpl implements EstoqueService {
             estoque.setQuantidade(estoque.getQuantidade() + quantidade);
             estoque.setDataAtualizacao(dataAtualizacao);
         } else {
-            estoque = new Estoque(cnpj, numeroRegistro, quantidade, dataAtualizacao);
+            throw new EstoqueNotFoundException("Medicamento não encontrado no estoque. Favor informar um número de registro válido.");
         }
 
         estoqueRepository.save(estoque);
 
-        return new EstoqueResponse(estoque.getCnpj(), estoque.getNroRegistro(),
-                estoque.getQuantidade(), estoque.getDataAtualizacao());
+        return new EstoqueResponse(
+                estoque.getCnpj(),
+                estoque.getNroRegistro(),
+                estoque.getQuantidade(),
+                estoque.getDataAtualizacao()
+        );
     }
+
 
     public EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest) {
         Long cnpj = estoqueRequest.getCnpj();
