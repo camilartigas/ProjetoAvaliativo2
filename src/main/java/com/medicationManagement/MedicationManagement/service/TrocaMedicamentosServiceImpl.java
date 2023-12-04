@@ -33,12 +33,13 @@ public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
             throw new RuntimeException("CNPJ não localizado");
         }
 
-        // Verificar se o registro existe nos estoques (RN04)
+        // Verificar se o registro existe no estoque de origem
         Estoque estoqueOrigem = estoqueRepository.findByCnpjAndNroRegistro(request.getCnpjOrigem(), request.getNroRegistro())
                 .orElseThrow(() -> new RuntimeException("Registro não localizado no estoque de origem"));
 
+        // Verificar se o registro existe no estoque de destino
         Estoque estoqueDestino = estoqueRepository.findByCnpjAndNroRegistro(request.getCnpjDestino(), request.getNroRegistro())
-                .orElseThrow(() -> new RuntimeException("Registro não localizado no estoque de destino"));
+                .orElse(new Estoque(request.getCnpjDestino(), request.getNroRegistro(), 0)); // Se não existir, cria com quantidade zero
 
         // Validação de quantidade disponível (RN05)
         if (estoqueOrigem.getQuantidade() < request.getQuantidade()) {
@@ -68,4 +69,5 @@ public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
 
         return response;
     }
+
 }

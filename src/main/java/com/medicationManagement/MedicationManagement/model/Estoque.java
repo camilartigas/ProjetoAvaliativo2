@@ -42,4 +42,12 @@ public class Estoque implements Serializable {
         this.quantidade = quantidade;
         this.dataAtualizacao = dataAtualizacao;
     }
+
+    public Estoque(Long cnpj, Integer nroRegistro, Integer quantidade) {
+        this.cnpj = cnpj;
+        this.nroRegistro = nroRegistro;
+        this.quantidade = quantidade;
+        this.dataAtualizacao = LocalDateTime.now();
+    }
+
 }
