@@ -5,6 +5,7 @@ import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundE
 import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
+import com.medicationManagement.MedicationManagement.service.TrocaMedicamentosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,13 @@ import java.util.List;
 public class EstoqueController {
 
     private final EstoqueService estoqueService;
+    private final TrocaMedicamentosService trocaMedicamentosService;
+
 
     @Autowired
-    public EstoqueController(EstoqueService estoqueService) {
+    public EstoqueController(EstoqueService estoqueService, TrocaMedicamentosService trocaMedicamentosService) {
         this.estoqueService = estoqueService;
+        this.trocaMedicamentosService = trocaMedicamentosService;
     }
 
     @GetMapping("/{cnpj}")
