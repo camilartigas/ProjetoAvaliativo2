@@ -1,8 +1,6 @@
 package com.medicationManagement.MedicationManagement.controller;
 
-import com.medicationManagement.MedicationManagement.dto.EstoqueDetalheDTO;
-import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
-import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
+import com.medicationManagement.MedicationManagement.dto.*;
 import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
@@ -56,4 +54,13 @@ public class EstoqueController {
         }
     }
 
+    @PutMapping
+    public ResponseEntity<Object> trocarMedicamentosEntreFarmacias(@RequestBody TrocaMedicamentosRequest request) {
+        try {
+            TrocaMedicamentosResponse response = trocaMedicamentosService.trocarMedicamentos(request);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
