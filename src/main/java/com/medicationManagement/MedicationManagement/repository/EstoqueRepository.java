@@ -16,4 +16,6 @@ public interface EstoqueRepository extends JpaRepository<Estoque, Long> {
 
     Optional<Estoque> findByNroRegistro(Integer nroRegistro);
 
+
+
 }
