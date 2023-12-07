@@ -1,21 +1,17 @@
 package com.medicationManagement.MedicationManagement.controller;
 
 import com.medicationManagement.MedicationManagement.dto.FarmaciaRequest;
+import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
 import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.service.FarmaciaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @RestController
@@ -42,7 +38,8 @@ public class FarmaciaController {
         if (farmacia != null) {
             return ResponseEntity.ok(farmacia);
         } else {
-            return ResponseEntity.notFound().build();
+            String mensagem = "Farmácia com CNPJ " + cnpj + " não encontrada.";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensagem);
         }
     }
 
