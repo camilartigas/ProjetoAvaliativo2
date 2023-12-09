@@ -3,9 +3,9 @@ package com.medicationManagement.MedicationManagement.service;
 import com.medicationManagement.MedicationManagement.dto.EstoqueDetalheDTO;
 import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
 import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
-import com.medicationManagement.MedicationManagement.exception.CnpjNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.EstoqueNotFoundException;
+import com.medicationManagement.MedicationManagement.exception.*;
 import com.medicationManagement.MedicationManagement.model.Estoque;
+import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.repository.EstoqueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,10 +18,15 @@ import java.util.Optional;
 public class EstoqueServiceImpl implements EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
+    private final FarmaciaService farmaciaService;
+    private final MedicamentoService medicamentoService;
+
 
     @Autowired
-    public EstoqueServiceImpl(EstoqueRepository estoqueRepository) {
+    public EstoqueServiceImpl(EstoqueRepository estoqueRepository, FarmaciaService farmaciaService, MedicamentoService medicamentoService) {
         this.estoqueRepository = estoqueRepository;
+        this.farmaciaService = farmaciaService;
+        this.medicamentoService = medicamentoService;
     }
 
     @Override
@@ -44,6 +49,20 @@ public class EstoqueServiceImpl implements EstoqueService {
 
     @Override
     public EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest) {
+        Farmacia farmaciaEncontrada = farmaciaService.obterFarmaciaPorCnpj(estoqueRequest.getCnpj());
+        if (farmaciaEncontrada == null) {
+            throw new FarmaciaNotFoundException("Falha na operação: CNPJ não encontrado no sistema.");
+        }
+
+        boolean medicamentoExiste = medicamentoService.existeMedicamentoComNumeroRegistro(estoqueRequest.getNroRegistro());
+        if (!medicamentoExiste) {
+            throw new MedicamentoNotFoundException("Falha na operação: Número de registro não encontrado no sistema.");
+        }
+
+        if (estoqueRequest.getQuantidade() <= 0) {
+            throw new QuantidadeInvalidaException("A quantidade deve ser um número positivo maior que zero.");
+        }
+
         Long cnpj = estoqueRequest.getCnpj();
         Integer numeroRegistro = estoqueRequest.getNroRegistro();
         Integer quantidade = estoqueRequest.getQuantidade();

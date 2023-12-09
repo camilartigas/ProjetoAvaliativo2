@@ -4,19 +4,14 @@ import com.medicationManagement.MedicationManagement.dto.*;
 import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
-import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
 import com.medicationManagement.MedicationManagement.service.FarmaciaService;
 import com.medicationManagement.MedicationManagement.service.MedicamentoService;
 import com.medicationManagement.MedicationManagement.service.TrocaMedicamentosService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 
@@ -49,20 +44,6 @@ public class EstoqueController {
 
     @PostMapping
     public ResponseEntity<?> adicionarMedicamentoAoEstoque(@RequestBody EstoqueRequest estoqueRequest) {
-        Farmacia farmaciaEncontrada = farmaciaService.obterFarmaciaPorCnpj(estoqueRequest.getCnpj());
-        if (farmaciaEncontrada == null) {
-            return ResponseEntity.badRequest().body("Falha na operação: CNPJ não encontrado no sistema.");
-        }
-
-        boolean medicamentoExiste = medicamentoService.existeMedicamentoComNumeroRegistro(estoqueRequest.getNroRegistro());
-        if (!medicamentoExiste) {
-            return ResponseEntity.badRequest().body("Falha na operação: Número de registro não encontrado no sistema.");
-        }
-
-        if (estoqueRequest.getQuantidade() <= 0) {
-            return ResponseEntity.badRequest().body("A quantidade não pode ser zero ou negativa.");
-        }
-
         try {
             EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
             return ResponseEntity.ok(response);
