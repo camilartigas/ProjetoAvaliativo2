@@ -76,7 +76,11 @@ public class EstoqueServiceImpl implements EstoqueService {
             estoque.setQuantidade(estoque.getQuantidade() + quantidade);
             estoque.setDataAtualizacao(dataAtualizacao);
         } else {
-            throw new EstoqueNotFoundException("Medicamento não encontrado no estoque. Favor informar um número de registro válido.");
+            estoque = new Estoque();
+            estoque.setCnpj(cnpj);
+            estoque.setNroRegistro(numeroRegistro);
+            estoque.setQuantidade(quantidade);
+            estoque.setDataAtualizacao(dataAtualizacao);
         }
 
         estoqueRepository.save(estoque);
