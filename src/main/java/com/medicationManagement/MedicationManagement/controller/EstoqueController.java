@@ -59,6 +59,10 @@ public class EstoqueController {
             return ResponseEntity.badRequest().body("Falha na operação: Número de registro não encontrado no sistema.");
         }
 
+        if (estoqueRequest.getQuantidade() <= 0) {
+            return ResponseEntity.badRequest().body("A quantidade não pode ser zero ou negativa.");
+        }
+
         try {
             EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
             return ResponseEntity.ok(response);
