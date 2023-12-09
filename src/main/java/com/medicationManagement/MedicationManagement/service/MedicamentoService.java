@@ -10,7 +10,6 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
 
@@ -61,5 +60,8 @@ public class MedicamentoService {
         novoMedicamento.setPreco(medicamentoRequest.getPreco());
         novoMedicamento.setTipoMedicamento(medicamentoRequest.getTipo());
         return novoMedicamento;
+    }
+    public boolean existeMedicamentoComNumeroRegistro(Integer numeroRegistro) {
+        return medicamentoRepository.existsByNumeroRegistro(numeroRegistro);
     }
 }

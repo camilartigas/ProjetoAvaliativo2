@@ -4,7 +4,10 @@ import com.medicationManagement.MedicationManagement.dto.*;
 import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
+import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
+import com.medicationManagement.MedicationManagement.service.FarmaciaService;
+import com.medicationManagement.MedicationManagement.service.MedicamentoService;
 import com.medicationManagement.MedicationManagement.service.TrocaMedicamentosService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,18 +19,23 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
 @RestController
 @RequestMapping("/estoque")
 public class EstoqueController {
 
     private final EstoqueService estoqueService;
     private final TrocaMedicamentosService trocaMedicamentosService;
+    private final FarmaciaService farmaciaService;
+    private final MedicamentoService medicamentoService;
 
 
     @Autowired
-    public EstoqueController(EstoqueService estoqueService, TrocaMedicamentosService trocaMedicamentosService) {
+    public EstoqueController(EstoqueService estoqueService, TrocaMedicamentosService trocaMedicamentosService, FarmaciaService farmaciaService, MedicamentoService medicamentoService) {
         this.estoqueService = estoqueService;
         this.trocaMedicamentosService = trocaMedicamentosService;
+        this.farmaciaService = farmaciaService;
+        this.medicamentoService = medicamentoService;
     }
 
     @GetMapping("/{cnpj}")
@@ -40,13 +48,15 @@ public class EstoqueController {
     }
 
     @PostMapping
-    public ResponseEntity<?> adicionarMedicamentoAoEstoque(@RequestBody @Valid EstoqueRequest estoqueRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            StringBuilder errorMessage = new StringBuilder();
-            for (FieldError fieldError : bindingResult.getFieldErrors()) {
-                errorMessage.append(fieldError.getDefaultMessage()).append(". ");
-            }
-            return ResponseEntity.badRequest().body(errorMessage.toString());
+    public ResponseEntity<?> adicionarMedicamentoAoEstoque(@RequestBody EstoqueRequest estoqueRequest) {
+        Farmacia farmaciaEncontrada = farmaciaService.obterFarmaciaPorCnpj(estoqueRequest.getCnpj());
+        if (farmaciaEncontrada == null) {
+            return ResponseEntity.badRequest().body("Falha na operação: CNPJ não encontrado no sistema.");
+        }
+
+        boolean medicamentoExiste = medicamentoService.existeMedicamentoComNumeroRegistro(estoqueRequest.getNroRegistro());
+        if (!medicamentoExiste) {
+            return ResponseEntity.badRequest().body("Falha na operação: Número de registro não encontrado no sistema.");
         }
 
         try {
