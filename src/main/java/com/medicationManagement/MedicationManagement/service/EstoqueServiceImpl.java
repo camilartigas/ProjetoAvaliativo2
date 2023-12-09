@@ -5,11 +5,8 @@ import com.medicationManagement.MedicationManagement.dto.EstoqueRequest;
 import com.medicationManagement.MedicationManagement.dto.EstoqueResponse;
 import com.medicationManagement.MedicationManagement.exception.CnpjNotFoundException;
 import com.medicationManagement.MedicationManagement.exception.EstoqueNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
 import com.medicationManagement.MedicationManagement.model.Estoque;
-import com.medicationManagement.MedicationManagement.model.Medicamento;
 import com.medicationManagement.MedicationManagement.repository.EstoqueRepository;
-import com.medicationManagement.MedicationManagement.repository.MedicamentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -21,14 +18,11 @@ import java.util.Optional;
 public class EstoqueServiceImpl implements EstoqueService {
 
     private final EstoqueRepository estoqueRepository;
-    private final MedicamentoRepository medicamentoRepository;
 
     @Autowired
-    public EstoqueServiceImpl(EstoqueRepository estoqueRepository, MedicamentoRepository medicamentoRepository) {
+    public EstoqueServiceImpl(EstoqueRepository estoqueRepository) {
         this.estoqueRepository = estoqueRepository;
-        this.medicamentoRepository = medicamentoRepository;
     }
-
 
     @Override
     public List<EstoqueDetalheDTO> consultarEstoquePorCnpj(Long cnpj) {
@@ -63,20 +57,9 @@ public class EstoqueServiceImpl implements EstoqueService {
             estoque.setQuantidade(estoque.getQuantidade() + quantidade);
             estoque.setDataAtualizacao(dataAtualizacao);
         } else {
-            // Verifica se o medicamento existe pelo número de registro
-            Optional<Medicamento> medicamentoOptional = medicamentoRepository.findByNumeroRegistro(numeroRegistro);
-            Medicamento medicamento;
-
-            if (medicamentoOptional.isPresent()) {
-                // Se o medicamento existir, cria um novo registro no estoque
-                medicamento = medicamentoOptional.get();
-                estoque = new Estoque(cnpj, numeroRegistro, quantidade, dataAtualizacao);
-                estoque.setMedicamento(medicamento);
-            } else {
-                // Se o medicamento não existir, lança uma exceção
-                throw new MedicamentoNotFoundException("Medicamento não encontrado pelo número de registro.");
-            }
+            throw new EstoqueNotFoundException("Medicamento não encontrado no estoque. Favor informar um número de registro válido.");
         }
+
         estoqueRepository.save(estoque);
 
         return new EstoqueResponse(
