@@ -7,6 +7,8 @@ import com.medicationManagement.MedicationManagement.repository.EstoqueRepositor
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
@@ -20,11 +22,27 @@ public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
 
     @Override
     public TrocaMedicamentosResponse trocarMedicamentos(TrocaMedicamentosRequest request) {
+        List<String> erros = new ArrayList<>();
+
         // Validação dos campos da requisição
-        if (request.getCnpjOrigem() == null || request.getCnpjDestino() == null ||
-                request.getNroRegistro() == null || request.getQuantidade() == null ||
-                request.getQuantidade() <= 0) {
-            throw new RuntimeException("Campos da requisição inválidos");
+        if (request.getCnpjOrigem() == null) {
+            erros.add("Por favor, digite o CNPJ de origem");
+        }
+        if (request.getCnpjDestino() == null) {
+            erros.add("Por favor, digite o CNPJ de destino");
+        }
+        if (request.getNroRegistro() == null) {
+            erros.add("Por favor, digite o número de registro");
+        }
+
+        // Validação da quantidade
+        if (request.getQuantidade() == null || request.getQuantidade() <= 0) {
+            erros.add("Por favor, digite uma quantidade válida (número positivo maior que zero)");
+        }
+
+        if (!erros.isEmpty()) {
+            String mensagem = "Os seguintes erros foram encontrados: " + String.join(", ", erros);
+            throw new RuntimeException(mensagem);
         }
 
         // Verificar se os CNPJs existem no sistema (RN02)
