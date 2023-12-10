@@ -60,3 +60,6 @@ Este README fornece uma visão geral do Sistema de Gerenciamento de Medicamentos
 utilizadas, instruções de configuração e outras informações relevantes para usuários e desenvolvedores. 
 
 Projeto desenvolvido como forma avaliativa do DEVInHouse.
+
+Segue link do vídeo da apresentação do projeto:
+https://drive.google.com/drive/folders/19IRmqfIEWpsqDaaWM6rtnzgkWsmmel71?usp=sharing
