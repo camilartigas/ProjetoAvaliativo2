@@ -43,6 +43,13 @@ PostgreSQL, incluindo URL, nome de usuário, senha, etc.
 - Utilize clientes de API como Postman ou cURL para interagir com os endpoints RESTful expostos.
 - Acesse diferentes funcionalidades enviando requisições HTTP para os respectivos endpoints definidos nos controladores.
 
+## Possíveis Melhorias no Código
+
+- Implementar autenticação e autorização para controlar o acesso aos endpoints.
+- Adicionar logs para rastrear e solucionar problemas mais facilmente.
+- Implementação de um sistema de autenticação utilizando Spring Security.
+- Criação de usuários, atribuição de permissões e controle de acesso a diferentes funcionalidades com base nos papéis dos usuários.
+
 
 ## Informações de Contato
 Para dúvidas ou suporte, entre em contato com Camila Artigas de Prá em camiart@gmail.com.
