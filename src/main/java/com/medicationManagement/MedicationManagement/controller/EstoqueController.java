@@ -47,10 +47,8 @@ public class EstoqueController {
         try {
             EstoqueResponse response = estoqueService.adicionarMedicamentoAoEstoque(estoqueRequest);
             return ResponseEntity.ok(response);
-        } catch (FarmaciaNotFoundException | MedicamentoNotFoundException | QuantidadeInvalidaException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro interno no servidor");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 

@@ -49,23 +49,39 @@ public class EstoqueServiceImpl implements EstoqueService {
 
     @Override
     public EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest) {
-        Farmacia farmaciaEncontrada = farmaciaService.obterFarmaciaPorCnpj(estoqueRequest.getCnpj());
+        Long cnpj = estoqueRequest.getCnpj();
+        Integer numeroRegistro = estoqueRequest.getNroRegistro();
+        Integer quantidade = estoqueRequest.getQuantidade();
+
+        // Verifica se algum dos campos está vazio
+        if (cnpj == null || numeroRegistro == null || quantidade == null) {
+            String mensagem = "Todos os campos (CNPJ, número de registro e quantidade) devem ser preenchidos.\n";
+
+            if (cnpj == null) {
+                mensagem += " CNPJ não preenchido. Por favor, coloque o CNPJ!\n";
+            }
+            if (numeroRegistro == null) {
+                mensagem += " Número de registro não preenchido. Por favor, coloque o número de registro\n";
+            }
+            if (quantidade == null) {
+                mensagem += "- Quantidade não preenchida. Por favor, coloque a quantidade!\n";
+            }
+            throw new RuntimeException(mensagem);
+        }
+
+        Farmacia farmaciaEncontrada = farmaciaService.obterFarmaciaPorCnpj(cnpj);
         if (farmaciaEncontrada == null) {
             throw new FarmaciaNotFoundException("Falha na operação: CNPJ não encontrado no sistema.");
         }
 
-        boolean medicamentoExiste = medicamentoService.existeMedicamentoComNumeroRegistro(estoqueRequest.getNroRegistro());
+        boolean medicamentoExiste = medicamentoService.existeMedicamentoComNumeroRegistro(numeroRegistro);
         if (!medicamentoExiste) {
             throw new MedicamentoNotFoundException("Falha na operação: Número de registro não encontrado no sistema.");
         }
 
-        if (estoqueRequest.getQuantidade() <= 0) {
+        if (quantidade <= 0) {
             throw new QuantidadeInvalidaException("A quantidade deve ser um número positivo maior que zero.");
         }
-
-        Long cnpj = estoqueRequest.getCnpj();
-        Integer numeroRegistro = estoqueRequest.getNroRegistro();
-        Integer quantidade = estoqueRequest.getQuantidade();
 
         Optional<Estoque> estoqueOptional = estoqueRepository.findByCnpjAndNroRegistro(cnpj, numeroRegistro);
         Estoque estoque;
@@ -92,6 +108,7 @@ public class EstoqueServiceImpl implements EstoqueService {
                 estoque.getDataAtualizacao()
         );
     }
+
 
 
     public EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest) {
