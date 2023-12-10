@@ -8,8 +8,8 @@ import com.medicationManagement.MedicationManagement.repository.MedicamentoRepos
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+
 
 @Service
 public class InicializacaoService {
@@ -18,12 +18,14 @@ public class InicializacaoService {
     private final MedicamentoRepository medicamentoRepository;
     private final EstoqueRepository estoqueRepository;
 
+
     @Autowired
     public InicializacaoService(FarmaciaRepository farmaciaRepository, MedicamentoRepository medicamentoRepository, EstoqueRepository estoqueRepository) {
         this.farmaciaRepository = farmaciaRepository;
         this.medicamentoRepository = medicamentoRepository;
         this.estoqueRepository = estoqueRepository;
     }
+
 
     @Transactional
     public void popularDadosIniciais() {
@@ -173,6 +175,5 @@ public class InicializacaoService {
                 22,
                 LocalDateTime.now());
         estoqueRepository.save(estoque6);
-
     }
 }

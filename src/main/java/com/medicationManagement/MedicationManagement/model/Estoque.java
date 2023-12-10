@@ -3,9 +3,9 @@ package com.medicationManagement.MedicationManagement.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+
 
 @Data
 @NoArgsConstructor
@@ -18,7 +18,6 @@ public class Estoque implements Serializable {
     private Long cnpj;
     @Id
     private Integer nroRegistro;
-
 
     @Column(nullable = false)
     private Integer quantidade;
@@ -49,5 +48,4 @@ public class Estoque implements Serializable {
         this.quantidade = quantidade;
         this.dataAtualizacao = LocalDateTime.now();
     }
-
 }

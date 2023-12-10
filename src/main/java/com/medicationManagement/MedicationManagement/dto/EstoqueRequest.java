@@ -3,6 +3,7 @@ package com.medicationManagement.MedicationManagement.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+
 @Data
 public class    EstoqueRequest {
     @NotNull(message = "O CNPJ é obrigatório")
@@ -15,4 +16,3 @@ public class    EstoqueRequest {
     private Integer quantidade;
 }
 
-//(DTO para a requisição de adição de medicamentos ao estoque)

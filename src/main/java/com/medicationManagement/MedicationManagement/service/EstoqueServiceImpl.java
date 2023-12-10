@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class EstoqueServiceImpl implements EstoqueService {
 
@@ -29,6 +30,7 @@ public class EstoqueServiceImpl implements EstoqueService {
         this.medicamentoService = medicamentoService;
     }
 
+
     @Override
     public List<EstoqueDetalheDTO> consultarEstoquePorCnpj(Long cnpj) {
         List<Estoque> estoques = estoqueRepository.findByCnpj(cnpj);
@@ -43,9 +45,9 @@ public class EstoqueServiceImpl implements EstoqueService {
 
             estoquesDetalhes.add(detalheDTO);
         }
-
         return estoquesDetalhes;
     }
+
 
     @Override
     public EstoqueResponse adicionarMedicamentoAoEstoque(EstoqueRequest estoqueRequest) {
@@ -108,7 +110,6 @@ public class EstoqueServiceImpl implements EstoqueService {
                 estoque.getDataAtualizacao()
         );
     }
-
 
 
     public EstoqueResponse venderMedicamentoDoEstoque(EstoqueRequest estoqueRequest) {

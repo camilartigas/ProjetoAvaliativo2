@@ -1,9 +1,6 @@
 package com.medicationManagement.MedicationManagement.controller;
 
 import com.medicationManagement.MedicationManagement.dto.*;
-import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.MedicamentoNotFoundException;
-import com.medicationManagement.MedicationManagement.exception.QuantidadeInvalidaException;
 import com.medicationManagement.MedicationManagement.service.EstoqueService;
 import com.medicationManagement.MedicationManagement.service.FarmaciaService;
 import com.medicationManagement.MedicationManagement.service.MedicamentoService;

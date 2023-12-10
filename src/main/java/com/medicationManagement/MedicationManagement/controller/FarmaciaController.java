@@ -1,7 +1,6 @@
 package com.medicationManagement.MedicationManagement.controller;
 
 import com.medicationManagement.MedicationManagement.dto.FarmaciaRequest;
-import com.medicationManagement.MedicationManagement.exception.FarmaciaNotFoundException;
 import com.medicationManagement.MedicationManagement.model.Farmacia;
 import com.medicationManagement.MedicationManagement.service.FarmaciaService;
 import jakarta.validation.Valid;

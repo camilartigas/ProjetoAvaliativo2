@@ -5,10 +5,10 @@ import com.medicationManagement.MedicationManagement.dto.TrocaMedicamentosRespon
 import com.medicationManagement.MedicationManagement.model.Estoque;
 import com.medicationManagement.MedicationManagement.repository.EstoqueRepository;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
@@ -19,6 +19,7 @@ public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
     public TrocaMedicamentosServiceImpl(EstoqueRepository estoqueRepository) {
         this.estoqueRepository = estoqueRepository;
     }
+
 
     @Override
     public TrocaMedicamentosResponse trocarMedicamentos(TrocaMedicamentosRequest request) {
@@ -87,5 +88,4 @@ public class TrocaMedicamentosServiceImpl implements TrocaMedicamentosService {
 
         return response;
     }
-
 }

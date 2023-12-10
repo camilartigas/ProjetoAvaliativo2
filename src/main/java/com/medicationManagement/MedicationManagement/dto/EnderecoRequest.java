@@ -1,12 +1,10 @@
 package com.medicationManagement.MedicationManagement.dto;
 
-
 import lombok.Data;
 
 
 @Data
 public class EnderecoRequest {
-
 
     private Long cep;
     private String logradouro;
@@ -18,4 +16,3 @@ public class EnderecoRequest {
     private Double latitude;
     private Double longitude;
 }
-

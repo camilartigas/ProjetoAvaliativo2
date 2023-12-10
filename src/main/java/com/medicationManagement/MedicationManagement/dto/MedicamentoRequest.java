@@ -4,6 +4,7 @@ import com.medicationManagement.MedicationManagement.model.TipoMedicamento;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+
 @Data
 public class MedicamentoRequest {
     @NotNull(message = "O número de registro é obrigatório")
